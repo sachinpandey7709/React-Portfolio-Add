@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Send } from "lucide-react";
+import Swal from "sweetalert2";
 
 export default function Contact() {
   const [formData, setFormData] = useState({
@@ -9,11 +10,9 @@ export default function Contact() {
   });
 
   const [status, setStatus] = useState("idle");
-  const [errorMsg, setErrorMsg] = useState("");
 
   const handleChange = (e) => {
     setStatus("idle");
-    setErrorMsg("");
     setFormData((prev) => ({
       ...prev,
       [e.target.name]: e.target.value,
@@ -23,15 +22,16 @@ export default function Contact() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Check env key
     if (!import.meta.env.VITE_WEB3FORMS_KEY) {
-      setStatus("error");
-      setErrorMsg("Configuration error. Please try again later.");
+      Swal.fire({
+        title: "Error!",
+        text: "Configuration error. Please try again later.",
+        icon: "error",
+      });
       return;
     }
 
     setStatus("loading");
-    setErrorMsg("");
 
     try {
       const payload = {
@@ -57,15 +57,27 @@ export default function Contact() {
         throw new Error(data.message || "Message sending failed");
       }
 
-      // Success
-      setStatus("success");
-      setFormData({ name: "", email: "", message: "" });
+      // ✅ Success Alert
+      Swal.fire({
+        title: "Success!",
+        text: "Message sent successfully!",
+        icon: "success",
+      });
 
-      setTimeout(() => setStatus("idle"), 4000);
+      setFormData({ name: "", email: "", message: "" });
+      setStatus("idle");
+
     } catch (error) {
       console.error(error);
-      setStatus("error");
-      setErrorMsg("Failed to send message. Please try again.");
+
+      // ❌ Error Alert
+      Swal.fire({
+        title: "Error!",
+        text: "Failed to send message. Please try again.",
+        icon: "error",
+      });
+
+      setStatus("idle");
     }
   };
 
@@ -85,7 +97,7 @@ export default function Contact() {
 
         <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-lg p-6 sm:p-8 text-left">
           <form onSubmit={handleSubmit} className="space-y-6">
-            
+
             <div>
               <label className="block text-sm font-medium mb-2 dark:text-white">
                 Name
@@ -127,18 +139,6 @@ export default function Contact() {
                 className="w-full px-4 py-3 rounded-lg border dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white"
               />
             </div>
-
-            {status === "success" && (
-              <p className="text-sm text-emerald-500">
-                ✅ Message sent successfully!
-              </p>
-            )}
-
-            {status === "error" && (
-              <p className="text-sm text-red-500">
-                ❌ {errorMsg}
-              </p>
-            )}
 
             <button
               type="submit"
