@@ -9,10 +9,7 @@ This portfolio showcases my skills, projects, experience, and contact informatio
 🔗 https://react-portfolio-add.vercel.app/
 
 ---
-
-## 📸 Preview
-
-> Add screenshot here (optional)
+bc86c036-f4fc-4440-b28a-e04f7d6fbe8d
 
 ---
 
